@@ -99,10 +99,22 @@ class YT_ripper:
 		pass
 		# curl self.video_link
 
+	def checkout_playlist(self,playlist_url):
+		self.playlist_ids = []
+
+		self.source = urllib.urlopen(playlist_url).read()
+		self.ids_string = regexps.VIDEO_LIST.findall(source)[0]
+		self.ids_string = self.ids_string.replace('"','')
+		self.ids_string = self.ids_string.replace(' ','')
+		for i in ids_string.split(','):
+			self.playlist_ids.append(i)
+		return self.playlist_ids
+
 class regexps:
 	def __init__(self):
 		self.VIDEO_ID = re.compile(r'video_id=([^&]+)')
 		self.T = re.compile(r'&t=([^&]+)')
+		self.VIDEO_LIST = re.compile("'FULL_SEQUENTIAL_VIDEO_LIST': \[([^\]]+)")
 
 class __video:
 	def __init__(self, ident):
