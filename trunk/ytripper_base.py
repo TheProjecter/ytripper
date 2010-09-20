@@ -15,10 +15,16 @@ import re
 
 class YT_ripper:
 	def __init__(self):
+		self.modes = {"mp3-conversion": False, "keep-files-tmp": False, "check-playlist": False}
+		self.links = []
+		
+		self.__parse_args()
+		self.__check_links()
+		
+		self.params = {"playlist": None, "videos": []}
+		
 		self.header = {"Connection": "keep-alive", "Referer": "http://www.google.com", "Accept": "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"} #usw.
 		self.init_tmp()
-		
-		self.vid_list = []
 		
 		for arg in sys.argv:
 			self.vid_list.append(arg)
@@ -26,6 +32,54 @@ class YT_ripper:
 		for vid in self.vid_list:
 			pass
 		
+	def __parse_args(self):
+		args = sys.argv
+		
+		for arg in args:
+			if arg == "-m" or arg == "--mpeg-3-conversion":
+				self.modes["mp3-conversion"] = True
+			elif arg == "-p" or arg == "--playlist":
+				self.modes["check-playlist"] = True
+			elif arg == "-k" or arg == "--keep-files":
+				# do not delete anything created in /tmp
+				self.modes["keep-files-tmp"] = True
+				
+			else:
+				# assume we got a youtube url or video id
+				self.links.append(arg)
+			
+			
+	def __check_links(self):
+		for link in self.links:
+			if self.modes[check-playlist]:
+				# assume the given links are playlists
+				#TODO
+				mach_deine_playlist_check_funktion()
+				# schreib die id's dann in: self.params["videos"].append(id)
+			else:
+				# assume the given links are all youtube links or video ids
+				ident = self.__extract_ident()
+				self.params["videos"].append(ident)
+				
+			return True
+		
+	def __extract_ident(self, url):
+		if url.count("watch?") > 0:
+			# url is a path, or at least contains "watch?"
+			if url.startswith("http") and url.count("youtube") > 0:
+				url = url.split("/")[3]
+				if url.count("&") > 0:
+					url = url.split("&")[0]
+				ident = url.replace("watch?v=", "")
+				return ident
+			else:
+				print "[-]Seems to be no YouToube link!"
+				return False
+		else:
+			# url seems to be no youtube link
+			print "[ ] The given URL seems to be no YouTube link, or it is a video id."
+			return False
+			
 	def init_tmp(self):
 		# create dir in /tmp and chdir
 		try:
@@ -51,15 +105,14 @@ class regexps:
 		self.T = re.compile(r'&t=([^&]+)')
 
 class __video:
-	def __init__(self, url):
+	def __init__(self, ident):
 		
 		#tmp
 		os.chdir("/tmp")
 		
 		self.regexps = regexps()
-		
-		self.url = url
-		self.id = self.__extract_id()
+
+		self.id = ident
 		self.link = self.__gen_link(self.id)
 		self.source = self.__get_source(self.url)
 		self.source_file = self.__write_source_to_tmp()
@@ -70,24 +123,6 @@ class __video:
 		self.temp_dl_link = self.__gen_temp_dl_link()
 		
 		self.title = self.__get_title()
-		
-	def __extract_id(self):
-		url = self.url
-		if url.count("watch?") > 0:
-			# url is a path, or at least contains "watch?"
-			if url.startswith("http") and url.count("youtube") > 0:
-				url = url.split("/")[3]
-				if url.count("&") > 0:
-					url = url.split("&")[0]
-				id = url.replace("watch?v=", "")
-				return id
-			else:
-				print "[-]Seems to be no YouToube link!"
-				return False
-		else:
-			# url seems to be no youtube link
-			print "[ ] The given URL seems to be no YouTube link, or it is a video id."
-			return False
 		
 	def __gen_link(self, video_id):
 		return "http://www.youtube.com/watch?v=" + str(video_id)
@@ -162,6 +197,10 @@ class __video:
 			print "[+] Writing mp3-file to /tmp - maybe succeeded"
 		except:
 			print "[-] There was an error!"
+			
+	def __del__():
+		pass
+		#TODO: raeume in /tmp auf, an eigenen daten (der klasse)
 	
 new_vid = __video(sys.argv[1])
 
