@@ -15,6 +15,7 @@ import re
 
 class YT_ripper:
 	def __init__(self):
+		self.regexps = regexps()
 		self.modes = {"mp3-conversion": False, "keep-files-tmp": False, "check-playlist": False}
 		self.links = []
 		
@@ -100,15 +101,15 @@ class YT_ripper:
 		# curl self.video_link
 
 	def checkout_playlist(self,playlist_url):
-		self.playlist_ids = []
+		playlist_ids = []
 
-		self.source = urllib.urlopen(playlist_url).read()
-		self.ids_string = regexps.VIDEO_LIST.findall(source)[0]
-		self.ids_string = self.ids_string.replace('"','')
-		self.ids_string = self.ids_string.replace(' ','')
+		source = urllib.urlopen(playlist_url).read()
+		ids_string = self.regexps.VIDEO_LIST.findall(source)[0]
+		ids_string = ids_string.replace('"','')
+		ids_string = ids_string.replace(' ','')
 		for i in ids_string.split(','):
-			self.playlist_ids.append(i)
-		return self.playlist_ids
+			playlist_ids.append(i)
+		return playlist_ids
 
 class regexps:
 	def __init__(self):
