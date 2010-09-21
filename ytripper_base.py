@@ -55,8 +55,8 @@ class YT_ripper:
 			if self.modes[check-playlist]:
 				# assume the given links are playlists
 				#TODO
-				mach_deine_playlist_check_funktion()
-				# schreib die id's dann in: self.params["videos"].append(id)
+				for vid_id in checkout_playlist(link):
+					self.params["videos"].append(vid_id)
 			else:
 				# assume the given links are all youtube links or video ids
 				ident = self.__extract_ident()
@@ -116,6 +116,10 @@ class regexps:
 		self.VIDEO_ID = re.compile(r'video_id=([^&]+)')
 		self.T = re.compile(r'&t=([^&]+)')
 		self.VIDEO_LIST = re.compile("'FULL_SEQUENTIAL_VIDEO_LIST': \[([^\]]+)")
+
+class amazon_tags:
+	def __init__(self):
+		pass
 
 class __video:
 	def __init__(self, ident):
