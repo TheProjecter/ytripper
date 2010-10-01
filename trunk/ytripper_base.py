@@ -17,21 +17,36 @@ class YT_ripper:
 	def __init__(self):
 		self.regexps = regexps()
 		self.modes = {"mp3-conversion": False, "keep-files-tmp": False, "check-playlist": False}
+		
 		self.links = []
 		
 		self.__parse_args()
 		self.__check_links()
 		
-		self.params = {"playlist": None, "videos": []}
+		self.videos = []
+		
+		self.playlists = []
+		
+		# self.params = {"playlist": None, "videos": []}
 		
 		self.header = {"Connection": "keep-alive", "Referer": "http://www.google.com", "Accept": "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"} #usw.
-		self.init_tmp()
 		
-		for arg in sys.argv:
-			self.vid_list.append(arg)
+		self.__init_tmp()
 			
-		for vid in self.vid_list:
-			pass
+		if self.modes["check-playlist"]:
+			# there IS now the possibility to checkout more than one pl
+			for playlist in self.playlists:
+				self.checkout_playlist(playlist)
+		
+		# the actual main process
+		for vid in self.videos:
+			if self.modes["keep-files-tmp"]:
+				new_vid = __video(vid, True)
+			else:
+				new_vid = __video(vid, True)
+
+			new_vid.get_flv()
+			new_vid.flv_to_mp3()
 		
 	def __parse_args(self):
 		args = sys.argv
@@ -48,19 +63,21 @@ class YT_ripper:
 			else:
 				# assume we got a youtube url or video id
 				self.links.append(arg)
+				
+			return True
 			
 			
 	def __check_links(self):
 		for link in self.links:
-			if self.modes[check-playlist]:
+			if self.modes["check-playlist"]:
 				# assume the given links are playlists
-				#TODO
-				for vid_id in checkout_playlist(link):
-					self.params["videos"].append(vid_id)
+				ids = self.checkout_playlist(link)
+				for vid_id in ids:
+					self.videos.append(vid_id)
 			else:
 				# assume the given links are all youtube links or video ids
-				ident = self.__extract_ident()
-				self.params["videos"].append(ident)
+				ident = self.__extract_ident(link)
+				self.videos.append(ident)
 				
 			return True
 		
@@ -81,7 +98,7 @@ class YT_ripper:
 			print "[ ] The given URL seems to be no YouTube link, or it is a video id."
 			return False
 			
-	def init_tmp(self):
+	def __init_tmp(self):
 		# create dir in /tmp and chdir
 		try:
 			os.mkdir("/tmp/YT_dl/")
@@ -100,7 +117,7 @@ class YT_ripper:
 		pass
 		# curl self.video_link
 
-	def checkout_playlist(self,playlist_url):
+	def checkout_playlist(self, playlist_url):
 		playlist_ids = []
 
 		source = urllib.urlopen(playlist_url).read()
@@ -122,11 +139,8 @@ class amazon_tags:
 		pass
 
 class __video:
-	def __init__(self, ident):
-		
-		#tmp
-		os.chdir("/tmp")
-		
+	def __init__(self, ident, cleanup=False):
+		self.cleanup = cleanup
 		self.regexps = regexps()
 
 		self.id = ident
@@ -163,12 +177,12 @@ class __video:
 	
 		new_source = new_source.split("\n")
 	
-		iter = 0
+		i = 0 # iterator
 		for line in new_source:
-			iter += 1
+			i += 1
 		
 		title = ""
-		for line in range(0, iter):
+		for line in range(0, i):
 			line_source = new_source[line]
 			if line_source != "":
 				title += str(line_source.replace("    ", ""))
@@ -215,11 +229,9 @@ class __video:
 		except:
 			print "[-] There was an error!"
 			
-	def __del__():
-		pass
-		#TODO: raeume in /tmp auf, an eigenen daten (der klasse)
+	def __del__(self):
+		if self.cleanup:
+			os.remove(self.id + ".html") # remove the html source
+			os.remove(self.flv_path) # remove the .flv
 	
-new_vid = __video(sys.argv[1])
-
-new_vid.get_flv()
-new_vid.flv_to_mp3()
+instance = YT_ripper()
