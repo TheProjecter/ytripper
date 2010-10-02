@@ -13,6 +13,39 @@ import re
 #	detecting artist/title
 #	writing id3
 
+HELP = """
+ytripper - Options
+	\033[1mSyntax\033[m
+	ytripper [OPTIONS ...] links/id's/playlist's
+
+	\033[1mOptions\033[m
+	--keep-files, -k
+		Keep all temorary files in /tmp
+		WARNING: If you download a whole playlist,
+		there might be no free space left on your root partition!
+		This CAN cause trouble, so be sure you have free space left.
+
+	--mpeg-3-conversion, -m
+		Convert the downloaded files to mp3. NOTE: the .flv files will
+		be deleted! If you want to keep them, make sure you add the
+		"-k" flag.
+
+	--help, -?
+		Shows this and exits
+ 
+
+	\033[1mParameters\033[m
+	-p, --playlist  [PLAYLISTS]
+		The given playlists will be downloaded.
+    	
+	\033[1mExamples\033[m
+	Download playlist and convert all videos to MP3.
+		ytripper -m -p $PLAYLIST
+
+	Download video, convert it to MP3 and keep the temp files in /tmp.
+		ytripper -k -m $YOUTUBE-URL
+"""
+
 class YT_ripper:
 	def __init__(self):
 		sys.argv = sys.argv[1:]
@@ -21,12 +54,18 @@ class YT_ripper:
 		self.regexps = regexps()
 		self.modes = {
 		"mp3-conversion": False,
-		"keep-files-tmp": False, "check-playlist": False
+		"keep-files-tmp": False,
+		"check-playlist": False,
+		"help_mode": False
 		}
 		
 		self.links = []
 		
 		self.__parse_args()
+
+		if self.modes["help_mode"]:
+			print HELP
+			sys.exit(2)
 		self.__check_links()
 		
 		self.header = {
@@ -68,7 +107,9 @@ class YT_ripper:
 			elif arg == "-k" or arg == "--keep-files":
 				# do not delete anything created in /tmp
 				self.modes["keep-files-tmp"] = True
-				
+			elif arg == "-?" or arg == "--help":
+				self.modes["help_mode"] = True
+
 			else:
 				# assume we got a youtube url or video id
 				self.links.append(arg)
