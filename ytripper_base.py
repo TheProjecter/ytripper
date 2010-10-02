@@ -15,21 +15,24 @@ import re
 
 class YT_ripper:
 	def __init__(self):
+		sys.argv = sys.argv[1:]
+		self.playlists = []
+		self.videos = []
 		self.regexps = regexps()
-		self.modes = {"mp3-conversion": False, "keep-files-tmp": False, "check-playlist": False}
+		self.modes = {
+		"mp3-conversion": False,
+		"keep-files-tmp": False, "check-playlist": False
+		}
 		
 		self.links = []
 		
 		self.__parse_args()
 		self.__check_links()
 		
-		self.videos = []
-		
-		self.playlists = []
-		
-		# self.params = {"playlist": None, "videos": []}
-		
-		self.header = {"Connection": "keep-alive", "Referer": "http://www.google.com", "Accept": "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"} #usw.
+		self.header = {
+		"Connection": "keep-alive",
+		"Referer": "http://www.google.com",
+		"Accept": "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"}
 		
 		self.__init_tmp()
 			
@@ -39,14 +42,20 @@ class YT_ripper:
 				self.checkout_playlist(playlist)
 		
 		# the actual main process
+		print "Videos:" + str(self.videos)
 		for vid in self.videos:
 			if self.modes["keep-files-tmp"]:
-				new_vid = __video(vid, True)
+				new_vid = video(vid, self.modes["keep-files-tmp"])
 			else:
-				new_vid = __video(vid, True)
+				new_vid = video(vid, self.modes["keep-files-tmp"])
 
-			new_vid.get_flv()
-			new_vid.flv_to_mp3()
+			# if the video class couldn't get the token or video_id, the
+			# status from new_vid is 0, means that we cannot proceed
+			if new_vid.status:
+				new_vid.get_flv()
+				
+				if self.modes["mp3-conversion"]:
+					new_vid.flv_to_mp3()
 		
 	def __parse_args(self):
 		args = sys.argv
@@ -64,7 +73,7 @@ class YT_ripper:
 				# assume we got a youtube url or video id
 				self.links.append(arg)
 				
-			return True
+		return True
 			
 			
 	def __check_links(self):
@@ -95,7 +104,7 @@ class YT_ripper:
 				return False
 		else:
 			# url seems to be no youtube link
-			print "[ ] The given URL seems to be no YouTube link, or it is a video id."
+			print "[-] The given URL seems to be no YouTube link, or it is a video id."
 			return False
 			
 	def __init_tmp(self):
@@ -107,15 +116,6 @@ class YT_ripper:
 		os.chdir("/tmp/YT_dl")
 		
 		return True
-		
-	def get_video_link(self):
-		pass
-		# curl link
-		# self.video_link = ladida
-		
-	def get_video(self):
-		pass
-		# curl self.video_link
 
 	def checkout_playlist(self, playlist_url):
 		playlist_ids = []
@@ -138,23 +138,28 @@ class amazon_tags:
 	def __init__(self):
 		pass
 
-class __video:
+class video:
 	def __init__(self, ident, cleanup=False):
+		self.status = 1
 		self.cleanup = cleanup
 		self.regexps = regexps()
 
 		self.id = ident
 		self.link = self.__gen_link(self.id)
-		self.source = self.__get_source(self.url)
+		self.source = self.__get_source(self.link)
+		self.title = self.__get_title()
+		
 		self.source_file = self.__write_source_to_tmp()
 		
 		self.token = self.__get_token()
+		if not self.token:
+			print "[-] Seems that this video is unavailable: " + str(self.title)
+			
+			self.status = 0
+			
 		self.video_id = self.__get_video_id()
-		
 		self.temp_dl_link = self.__gen_temp_dl_link()
-		
-		self.title = self.__get_title()
-		
+			
 	def __gen_link(self, video_id):
 		return "http://www.youtube.com/watch?v=" + str(video_id)
 	
@@ -176,7 +181,7 @@ class __video:
 		new_source = new_source.split("</title>")[0]
 	
 		new_source = new_source.split("\n")
-	
+		
 		i = 0 # iterator
 		for line in new_source:
 			i += 1
@@ -198,18 +203,24 @@ class __video:
 	
 	def __get_token(self):
 		token_regexp = self.regexps.T
-		return token_regexp.findall(self.source)[0]
+		try:
+			return token_regexp.findall(self.source)[0]
+		except:
+			return None
 	
 	def __get_video_id(self):
 		video_id_regexp = self.regexps.VIDEO_ID
-		return video_id_regexp.findall(self.source)[0]
+		try:
+			return video_id_regexp.findall(self.source)[0]
+		except:
+			return None
 		
 	def __gen_temp_dl_link(self):
 		temp_dl_link = "http://www.youtube.com/get_video?&video_id=" + str(self.video_id) + "&t="  + str(self.token) + "&asv=3"
 		return temp_dl_link
 	
 	def get_flv(self):
-		print "[+] Downloading .flv"
+		print "[+] Downloading " + str(self.id) + ".flv"
 		flv_link = urllib.urlopen(self.temp_dl_link)
 		
 		self.flv_path = str(self.id) + ".flv"
@@ -231,7 +242,13 @@ class __video:
 			
 	def __del__(self):
 		if self.cleanup:
-			os.remove(self.id + ".html") # remove the html source
-			os.remove(self.flv_path) # remove the .flv
+			try:
+				if self.id: os.remove(self.id + ".html") # remove the html source
+			except:
+				pass
+			try: 
+				if self.flv_path: os.remove(self.flv_path) # remove the .flv
+			except:
+				pass
 	
 instance = YT_ripper()
