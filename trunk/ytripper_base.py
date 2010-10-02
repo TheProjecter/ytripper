@@ -45,9 +45,9 @@ class YT_ripper:
 		print "Videos:" + str(self.videos)
 		for vid in self.videos:
 			if self.modes["keep-files-tmp"]:
-				new_vid = video(vid, self.modes["keep-files-tmp"])
+				new_vid = video(vid, self.modes["keep-files-tmp"], self.modes["mp3-conversion"])
 			else:
-				new_vid = video(vid, self.modes["keep-files-tmp"])
+				new_vid = video(vid)
 
 			# if the video class couldn't get the token or video_id, the
 			# status from new_vid is 0, means that we cannot proceed
@@ -139,9 +139,10 @@ class amazon_tags:
 		pass
 
 class video:
-	def __init__(self, ident, cleanup=False):
+	def __init__(self, ident, cleanup=False, rmflv=False):
 		self.status = 1
 		self.cleanup = cleanup
+		self.rmflv = rmflv #whether removing the .flv or not
 		self.regexps = regexps()
 
 		self.id = ident
@@ -247,7 +248,7 @@ class video:
 			except:
 				pass
 			try: 
-				if self.flv_path: os.remove(self.flv_path) # remove the .flv
+				if self.flv_path and self.rmflv: os.remove(self.flv_path) # remove the .flv
 			except:
 				pass
 	
