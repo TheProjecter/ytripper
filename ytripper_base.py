@@ -66,6 +66,7 @@ class YT_ripper:
 		if self.modes["help_mode"]:
 			print HELP
 			sys.exit(2)
+
 		self.__check_links()
 		
 		self.header = {
@@ -83,10 +84,7 @@ class YT_ripper:
 		# the actual main process
 		print "Videos:" + str(self.videos)
 		for vid in self.videos:
-			if self.modes["keep-files-tmp"]:
-				new_vid = video(vid, self.modes["keep-files-tmp"], self.modes["mp3-conversion"])
-			else:
-				new_vid = video(vid)
+			new_vid = video(vid, self.modes["keep-files-tmp"], self.modes["mp3-conversion"])
 
 			# if the video class couldn't get the token or video_id, the
 			# status from new_vid is 0, means that we cannot proceed
@@ -287,7 +285,7 @@ class video:
 			try:
 				if self.id: os.remove(self.id + ".html") # remove the html source
 			except:
-				pass
+				print "[-] Cannot remove source file!"
 			try: 
 				if self.flv_path and self.rmflv: os.remove(self.flv_path) # remove the .flv
 			except:
