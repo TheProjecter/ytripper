@@ -53,8 +53,9 @@ def example_function():
 
 ==Classes==
 {{{
-class EveryLeadingCharUppercase:
+class everyLeadingCharUppercase:
 }}}
+(Except the first letter)
 
 ==Attributes and Methods==
 Private data:
@@ -69,3 +70,18 @@ Everything else is written as follows:
 {{{
 something_not_listed
 }}}
+==Kommentierung==
+One-line-comments should be written below the referred line of code:
+{{{
+do_smth()
+# does something
+}}}
+
+If you have a bigger comment use a block comment:
+{{{
+class makesSomething:
+    """
+       This class does something.
+
+       Sub-classes: __subOne, __subTwo
+    """
