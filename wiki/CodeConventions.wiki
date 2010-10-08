@@ -1,5 +1,5 @@
+#summary Conventions and guidelines for contributers
 #labels Featured,Phase-Implementation
-#Conventions and guidelines for contributers
 
 = Headers =
 
