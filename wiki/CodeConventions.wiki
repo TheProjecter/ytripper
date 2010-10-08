@@ -25,7 +25,6 @@ The file headers should look like this:
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
-__author__  = <author> (string)
 
 <local imports>
 
@@ -34,12 +33,36 @@ __author__  = <author> (string)
 
 }}}
 
+If you have more than one programmer per file, change the header as follows:
+{{{
+# Copyright (c) 2005 by <author> - <email>, <second-author> - <mail>
+}}}
+And so forth ;)
 
 = Code format =
+==Variables==
+{{{
+foo_bar = None
+really_long_var = True
+}}}
+
+== Functions ==
+{{{
+def example_function():
+}}}
 
 ==Classes==
 {{{
-class MixedCaseNoun
+class EveryLeadingCharUppercase:
+}}}
+
+==Attributes and Methods==
+Private data:
+{{{
+def __private_function(self):
+# ...
+
+class __internUsedObject:
 }}}
 
 Add your content here.  Format your content with:
