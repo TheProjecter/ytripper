@@ -38,6 +38,9 @@ If you have more than one programmer per file, change the header as follows:
 {{{
 # Copyright (c) 2005 by <author> - <email>, <second-author> - <mail>
 }}}
+
+And if it gets longer than approx. 90 chars, write the author/s in a new line.
+
 And so forth ;)
 
 = Code format =
