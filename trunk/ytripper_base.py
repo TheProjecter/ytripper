@@ -74,6 +74,7 @@ class YT_ripper:
 		self.links = []
 		
 		self.__parse_args()
+		print self.links
 
 		if self.modes["help_mode"]:
 			print HELP
@@ -139,7 +140,8 @@ class YT_ripper:
 				ident = self.__extract_ident(link)
 				self.videos.append(ident)
 				
-			return True
+		return True
+
 		
 	def __extract_ident(self, url):
 		if url.count("watch?") > 0:
