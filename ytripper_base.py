@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-# Copyright (c) 2005 by Christian Schulze - xCr4cx@googlemail.com 
+# Copyright (c) 2005 by Christian Schulze - xCr4cx@googlemail.com,
+# Florian Lerch - floppycode@yahoo.de 
 #
 # Generated: Fr 8. Okt 15:10:26 CEST 2010
 #
