@@ -184,6 +184,7 @@ class regexps:
 		self.VIDEO_ID = re.compile(r'video_id=([^&]+)')
 		self.T = re.compile(r'&t=([^&]+)')
 		self.VIDEO_LIST = re.compile("'FULL_SEQUENTIAL_VIDEO_LIST': \[([^\]]+)")
+		self.SPECIAL_SIGNS = re.compile("[^a-zA-Z0-9\s_]")
 
 class amazon_tags:
 	def __init__(self):
@@ -251,6 +252,9 @@ class video:
 		
 		while title.endswith(" "): title = title[:-1]
 	
+		#Remove special signs
+		title = self.regexps.SPECIAL_SIGNS.sub('',title)
+
 		return title
 	
 	def __get_token(self):
@@ -287,7 +291,7 @@ class video:
 	def flv_to_mp3(self):
 		print "[+] Converting .flv to .mp3"
 		try:
-			os.popen('ffmpeg  -loglevel quiet -i "' + str(self.flv_path) + '" "' + str(self.title) + '.mp3" 2>/dev/null')
+			os.popen('ffmpeg -i "/tmp/YT_dl/' + str(self.flv_path) + '" "/tmp/YT_dl/' + str(self.title) + '.mp3" 2>/dev/null')
 			print "[+] Writing mp3-file to /tmp - maybe succeeded"
 		except:
 			print "[-] There was an error!"
