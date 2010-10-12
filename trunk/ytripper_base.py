@@ -74,7 +74,6 @@ class YT_ripper:
 		self.links = []
 		
 		self.__parse_args()
-		print self.links
 
 		if self.modes["help_mode"]:
 			print HELP
@@ -157,9 +156,8 @@ class YT_ripper:
 				return False
 		else:
 			# url seems to be no youtube link
-			print "[-] The given URL seems to be no YouTube link, or it is a video id."
-			return False
-			
+			print "[-] Assuming the given parameter is a youtube video ID"
+			return url			
 	def __init_tmp(self):
 		# create dir in /tmp and chdir
 		try:
