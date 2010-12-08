@@ -1,7 +1,5 @@
 import Tkinter
-import Tkconstants
 import ytripper_base
-from Tkconstants import *
 
 def start():
     print cConvert.get()
