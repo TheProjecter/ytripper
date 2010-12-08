@@ -60,7 +60,6 @@ ytripper - Options
 
 class YT_ripper:
 	def __init__(self):
-		sys.argv = sys.argv[1:]
 		self.playlists = []
 		self.videos = []
 		self.regexps = regexps()
@@ -72,9 +71,13 @@ class YT_ripper:
 		}
 		
 		self.links = []
-		
-		self.__parse_args()
 
+	def start_from_console(self):
+		sys.argv = sys.argv[1:]
+		self.__parse_args()
+		self.process()
+
+	def process(self):
 		if self.modes["help_mode"]:
 			print HELP
 			sys.exit(2)
@@ -105,7 +108,7 @@ class YT_ripper:
 				
 				if self.modes["mp3-conversion"]:
 					new_vid.flv_to_mp3()
-		
+		 
 	def __parse_args(self):
 		args = sys.argv
 		
@@ -306,5 +309,8 @@ class video:
 				if self.flv_path and self.rmflv: os.remove(self.flv_path) # remove the .flv
 			except:
 				pass
-	
-instance = YT_ripper()
+				
+if __name__ == "__main__":
+	instance = YT_ripper()
+	instance.start_from_console()
+
