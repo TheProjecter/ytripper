@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 # Copyright (c) 2005 by Christian Schulze - xCr4cx@googlemail.com,
 # Florian Lerch - floppycode@yahoo.de 
@@ -25,7 +25,7 @@ import urllib
 import os
 import re
 
-HELP = """
+HELP_ = """
 ytripper - Options
 	\033[1mSyntax\033[m
 	ytripper [OPTIONS ...] links/id's/playlist's
@@ -37,6 +37,9 @@ ytripper - Options
 		there might be no free space left on your root partition!
 		This CAN cause trouble, so be sure you have free space left.
 
+	--list, -l
+		List all given Videos with the correct link. ALPHA-status
+		
 	--mpeg-3-conversion, -m
 		Convert the downloaded files to mp3. NOTE: the .flv files will
 		be deleted! If you want to keep them, make sure you add the
@@ -60,6 +63,7 @@ ytripper - Options
 
 class YT_ripper:
 	def __init__(self):
+		sys.argv = sys.argv[1:]
 		self.playlists = []
 		self.videos = []
 		self.regexps = regexps()
@@ -68,18 +72,15 @@ class YT_ripper:
 		"keep-files-tmp": False,
 		"check-playlist": False,
 		"help_mode": False
+		"list": False
 		}
 		
 		self.links = []
-
-	def start_from_console(self):
-		sys.argv = sys.argv[1:]
+		
 		self.__parse_args()
-		self.process()
 
-	def process(self):
 		if self.modes["help_mode"]:
-			print HELP
+			print HELP_
 			sys.exit(2)
 
 		self.__check_links()
@@ -95,6 +96,10 @@ class YT_ripper:
 			# there IS now the possibility to checkout more than one pl
 			for playlist in self.playlists:
 				self.checkout_playlist(playlist)
+				
+		if self.modes["list"]:
+			self.list_all_elements()
+			sys.exit(1)
 		
 		# the actual main process
 		print "Videos:" + str(self.videos)
@@ -108,7 +113,11 @@ class YT_ripper:
 				
 				if self.modes["mp3-conversion"]:
 					new_vid.flv_to_mp3()
-		 
+	
+	def list_all_elements(self):
+		for vid in self.videos:
+			print "http://www.youtube.com/watch?v=" + str(vid)
+			
 	def __parse_args(self):
 		args = sys.argv
 		
@@ -309,8 +318,5 @@ class video:
 				if self.flv_path and self.rmflv: os.remove(self.flv_path) # remove the .flv
 			except:
 				pass
-				
-if __name__ == "__main__":
-	instance = YT_ripper()
-	instance.start_from_console()
-
+	
+instance = YT_ripper()
