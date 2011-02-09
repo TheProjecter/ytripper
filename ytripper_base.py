@@ -71,7 +71,7 @@ class YT_ripper:
 		"mp3-conversion": False,
 		"keep-files-tmp": False,
 		"check-playlist": False,
-		"help_mode": False
+		"help_mode": False,
 		"list": False
 		}
 		
